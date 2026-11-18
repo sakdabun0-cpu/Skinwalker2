@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Halloween</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #121212;
+      color: #ff7518;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      overflow: hidden;
+    }
+    h1 { font-size: 3rem; margin-bottom: 10px; }
+    p { font-size: 1.5rem; color: #ffffff; margin-bottom: 30px; }
+    .buttons { display: flex; gap: 20px; }
+    button {
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #siBtn { background-color: #ff7518; color: #121212; }
+    #noBtn { background-color: #333333; color: #ffffff; }
+    
+    /* Skinwalker Jump Scare Overlay */
+    #scareOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: #000000;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      animation: strobe 0.08s infinite;
+    }
+    #skinwalkerGraphic {
+      width: 90vmin;
+      height: 90vmin;
+      animation: lungeAndShake 0.12s infinite;
+    }
+    @keyframes strobe {
+      0% { background-color: #000000; }
+      50% { background-color: #2b0000; }
+      100% { background-color: #000000; }
+    }
+    @keyframes lungeAndShake {
+      0% { transform: scale(1.1) translate(-10px, 5px) rotate(-2deg); }
+      25% { transform: scale(1.25) translate(12px, -8px) rotate(2deg); }
+      50% { transform: scale(1.15) translate(-8px, -10px) rotate(-1deg); }
+      75% { transform: scale(1.3) translate(10px, 8px) rotate(3deg); }
+      100% { transform: scale(1.1) translate(-10px, 5px) rotate(-2deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="mainContent">
+    <h1>Halloween</h1>
+    <p>¿Quieres celebrar Halloween conmigo?</p>
+    <div class="buttons">
+      <button id="siBtn">🎃 Si</button>
+      <button id="noBtn">🕸 No</button>
+    </div>
+  </div>
+
+  <!-- Fullscreen Skinwalker Jump Scare -->
+  <div id="scareOverlay">
+    <svg id="skinwalkerGraphic" viewBox="0 0 400 400" xmlns="http://w3.org">
+      <!-- Gaunt Elongated Skull/Face -->
+      <path d="M110,60 C80,140 95,260 145,340 C175,385 225,385 255,340 C305,260 320,140 290,60 C250,15 150,15 110,60 Z" fill="#c9c5b8" />
+      <!-- Sunken Cheek Shadows -->
+      <path d="M115,190 Q145,240 135,295 Q110,250 115,190 Z" fill="#5e5b52" opacity="0.7" />
+      <path d="M285,190 Q255,240 265,295 Q290,250 285,190 Z" fill="#5e5b52" opacity="0.7" />
+      <!-- Hollow Pitch-Black Eye Sockets -->
+      <ellipse cx="150" cy="145" rx="34" ry="44" fill="#050505" transform="rotate(-8 150 145)" />
+      <ellipse cx="250" cy="145" rx="34" ry="44" fill="#050505" transform="rotate(8 250 145)" />
+      <!-- Pinprick Glowing White Pupils -->
+      <circle cx="153" cy="148" r="3.5" fill="#ffffff" />
+      <circle cx="247" cy="148" r="3.5" fill="#ffffff" />
+      <!-- Sunken Nasal Slits -->
+      <path d="M192,200 L185,222 L196,218 Z" fill="#1a1917" />
+      <path d="M208,200 L215,222 L204,218 Z" fill="#1a1917" />
+      <!-- Unnaturally Wide Stretching Mouth -->
+      <path d="M125,255 Q200,365 275,255 Q200,295 125,255 Z" fill="#080000" stroke="#3a0000" stroke-width="4" />
+      <!-- Jagged Teeth -->
+      <path d="M140,268 L146,285 L153,271 L160,290 L168,274 L176,294 L185,276 L195,296 L205,276 L215,295 L224,275 L233,292 L241,272 L250,287 L258,268" fill="none" stroke="#e0dcd1" stroke-width="3" />
+    </svg>
+  </div>
+
+  <script>
+    const siBtn = document.getElementById('siBtn');
+    const noBtn = document.getElementById('noBtn');
+    const scareOverlay = document.getElementById('scareOverlay');
+
+    // Happy ending if they click Si
+    siBtn.addEventListener('click', () => {
+      document.getElementById('mainContent').innerHTML = 
+        '<h1>🎃 ¡Genial! 🎃</h1><p>Nos vemos en Halloween...</p>';
+    });
+
+    // Skinwalker Jump Scare if they click No
+    noBtn.addEventListener('click', () => {
+      scareOverlay.style.display = 'flex';
+      
+      // Dual-oscillator distorted shriek using Web Audio API
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      
+      const osc1 = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      // High piercing screech + low guttural rasp
+      osc1.type = 'sawtooth';
+      osc1.frequency.setValueAtTime(1400, audioCtx.currentTime);
+      osc1.frequency.exponentialRampToValueAtTime(220, audioCtx.currentTime + 1.8);
+
+      osc2.type = 'square';
+      osc2.frequency.setValueAtTime(145, audioCtx.currentTime);
+      osc2.frequency.linearRampToValueAtTime(55, audioCtx.currentTime + 1.8);
+      
+      gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.8);
+      
+      osc1.connect(gainNode);
+      osc2.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      
+      osc1.start();
+      osc2.start();
+      osc1.stop(audioCtx.currentTime + 1.8);
+      osc2.stop(audioCtx.currentTime + 1.8);
+    });
+  </script>
+
+</body>
+</html>
